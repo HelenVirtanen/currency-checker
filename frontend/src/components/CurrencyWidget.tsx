@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import "./CurrencyWidget.css";
 
 export function CurrencyWidget() {
   const [rates, setRates] = useState<Record<string, number> | null>(null);
 
   useEffect(() => {
     const fetchRates = async () => {
-      const res = await fetch('http://localhost:3001/rates');
+      const res = await fetch("http://localhost:3001/rates");
       const data = await res.json();
       setRates(data);
     };
@@ -18,12 +19,21 @@ export function CurrencyWidget() {
   if (!rates) return <div>Загрузка...</div>;
 
   return (
-    <div style={{ padding: 16, border: '1px solid #ccc', borderRadius: 8 }}>
-      <h3>Курсы RUB</h3>
-      <ul>
-        <li>USD: {rates.USD.toFixed(2)}</li>
-        <li>EUR: {rates.EUR.toFixed(2)}</li>
-        <li>GBP: {rates.GBP.toFixed(2)}</li>
+    <div className="currency-widget">
+      <h2 className="currency-heading">Курсы RUB</h2>
+      <ul className="currency-list">
+        <li className="currency-item">
+          <span className="currency-name">USD:</span>
+          <span>{rates.USD.toFixed(2)}</span>
+        </li>
+        <li className="currency-item">
+          <span className="currency-name">EUR:</span>
+          <span>{rates.EUR.toFixed(2)}</span>
+        </li>
+        <li className="currency-item">
+          <span className="currency-name">GBP:</span>
+          <span>{rates.GBP.toFixed(2)}</span>
+        </li>
       </ul>
     </div>
   );
