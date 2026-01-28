@@ -31,22 +31,35 @@ app.get("/rates", (req, res) => {
 });
 
 async function fetchRates(): Promise<Record<string, number>> {
-  const res = await fetch(
-    `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`,
-  );
-  const data = (await res.json()) as any;
+  try {
+    const res = await fetch(
+      `https://v6.exchangerate-api.com/v6/${API_KEY}/latest/USD`,
+    );
+    if (!res.ok) {
+      throw new Error(`Ошибка HTTP-запроса: ${res.status}`);
+    }
 
-  if (!data.conversion_rates || !data.conversion_rates.RUB) {
-    throw new Error("Некорректный ответ от API");
+    const data = (await res.json()) as any;
+
+    if (
+      data.result !== "success" ||
+      !data.conversion_rates ||
+      !data.conversion_rates.RUB
+    ) {
+      throw new Error("Некорректный ответ от API");
+    }
+
+    const usdToRub = data.conversion_rates.RUB;
+
+    return {
+      USD: usdToRub,
+      EUR: usdToRub / data.conversion_rates.EUR,
+      GBP: usdToRub / data.conversion_rates.GBP,
+    };
+  } catch (error) {
+    console.error("Ошибка fetchRates:", error);
+    throw error;
   }
-
-  const usdToRub = data.conversion_rates.RUB;
-
-  return {
-    USD: usdToRub,
-    EUR: usdToRub / data.conversion_rates.EUR,
-    GBP: usdToRub / data.conversion_rates.GBP,
-  };
 }
 
 function checkDelta(newRates: Record<string, number>) {

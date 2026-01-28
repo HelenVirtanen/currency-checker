@@ -6,9 +6,16 @@ export function CurrencyWidget() {
 
   useEffect(() => {
     const fetchRates = async () => {
-      const res = await fetch("http://localhost:3001/rates");
-      const data = await res.json();
-      setRates(data);
+      try {
+        const res = await fetch("http://localhost:3001/rates");
+        if (!res.ok) {
+          throw new Error(`Ошибка сервера: ${res.status}`);
+        }
+        const data = await res.json();
+        setRates(data);
+      } catch (error) {
+        console.error("Ошибка загрузки курсов:", error);
+      }
     };
 
     fetchRates();
