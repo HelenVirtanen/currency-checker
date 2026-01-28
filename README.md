@@ -1,6 +1,6 @@
 # 💱 Currency Checker
 
-![Currency Checker](../screenshots/currency-widget.PNG)
+![Currency Checker](./screenshots/currency-widget.PNG)
 
 Приложение для отслеживания курсов валют (USD, EUR, GBP → RUB) с:
 
@@ -34,17 +34,28 @@ USD: 75.58 → 77.10 руб.
 ```
 
 ## Запуск проекта локально
+1. Склонировать репозиторий и перейти в проект
 ```
 git clone https://github.com/your-username/currency-checker.git
 cd currency-checker
-cd backend // http://localhost:3001
-npm install
+```
+
+2. Установить и запустить бэкенд
+```
+cd backend
+npm i
 npm run start
+```
+Бэкенд будет доступен по адресу: http://localhost:3001
+
+3. Установить и запустить фронтенд
+```
 cd ..
-сd frontend // http://localhost:5173
-npm install
+сd frontend
+npm i
 npm run dev
 ```
+Фронтенд будет доступен по адресу: http://localhost:5173
 
 ## Настройка окружения
 Создай файл .env в папке backend и укажи переменные:
