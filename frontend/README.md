@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# 💱 Currency Checker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Currency Checker](../screenshots/currency-widget.PNG)
 
-Currently, two official plugins are available:
+Приложение для отслеживания курсов валют (USD, EUR, GBP → RUB) с:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- backend-сервером на **Node.js + Express + TypeScript**
+- периодическим обновлением курсов через **ExchangeRate API**
+- уведомлениями в **Telegram**, если курс изменился больше заданного порога
+- frontend-виджетом на **React + Vite + TypeScript**
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ Возможности
 
-## Expanding the ESLint configuration
+- 📈 Получение актуальных курсов валют
+- 🔔 Уведомления в Telegram при изменении курса
+- 💾 Кэширование последних курсов в `rates.json`
+- 🌐 API endpoint `/rates` для фронтенда
+- 🖥️ UI-виджет для отображения курсов
+- ⚙️ Настройка через `.env`
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Телеграм уведомления
+Бот отправляет сообщение, если изменение курса превышает THRESHOLD
+Проверка курсов выполняется по таймеру (setInterval)
+Уведомления приходят только когда backend запущен
+Пример сообщения:
+```
+Превышена дельта 1 руб.:
+USD: 75.58 → 77.10 руб.
+Разница: +1.52 руб.
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Запуск проекта локально
+```
+git clone https://github.com/your-username/currency-checker.git
+cd currency-checker
+cd backend // http://localhost:3001
+npm install
+npm run start
+cd ..
+сd frontend // http://localhost:5173
+npm install
+npm run dev
+```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Настройка окружения
+Создай файл .env в папке backend и укажи переменные:
+```
+TG_TOKEN=your_telegram_bot_token
+CHAT_ID=your_chat_id
+API_KEY=your_exchangerate_api_key
+THRESHOLD=1
 ```
