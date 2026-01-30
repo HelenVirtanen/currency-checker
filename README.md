@@ -52,6 +52,7 @@ THRESHOLD=1
 ```
 cd backend
 npm i
+npm run build
 npm run start
 ```
 Бэкенд будет доступен по адресу: http://localhost:3001
