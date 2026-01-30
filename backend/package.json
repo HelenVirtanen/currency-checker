@@ -2,7 +2,8 @@
   "name": "currency-backend",
   "version": "1.0.0",
   "scripts": {
-    "start": "ts-node bot.ts"
+    "build": "tsc",
+    "start": "node dist/bot.js"
   },
   "dependencies": {
     "bree": "^9.2.8",

@@ -1,9 +1,8 @@
 import "dotenv/config";
-import express from "express";
 import fetch from "node-fetch";
 import TelegramBot from "node-telegram-bot-api";
 import fs from "fs";
-import cors from "cors";
+import path from "path";
 
 const TELEGRAM_TOKEN = process.env.TG_TOKEN!;
 const CHAT_ID = process.env.CHAT_ID!;
@@ -12,23 +11,12 @@ const THRESHOLD = Number(process.env.THRESHOLD ?? 1);
 
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
 
+const ratesPath = path.join(process.cwd(), "rates.json");
+
 let lastRates: Record<string, number> = {};
-if (fs.existsSync("rates.json")) {
-  lastRates = JSON.parse(fs.readFileSync("rates.json", "utf-8"));
+if (fs.existsSync(ratesPath)) {
+  lastRates = JSON.parse(fs.readFileSync(ratesPath, "utf-8"));
 }
-
-const app = express();
-app.use(cors());
-
-app.get("/", (req, res) => {
-  res.send(
-    "Currency Checker API работает! Используйте /rates для текущих курсов.",
-  );
-});
-
-app.get("/rates", (req, res) => {
-  res.json(lastRates);
-});
 
 async function fetchRates(): Promise<Record<string, number>> {
   try {
@@ -68,31 +56,32 @@ function checkDelta(newRates: Record<string, number>) {
     if (!cur) continue;
 
     const old = lastRates[currency] ?? cur;
+    const isDeltaExceed = Math.abs(cur - old) >= THRESHOLD;
 
-    if (Math.abs(cur - old) >= THRESHOLD) {
-      bot.sendMessage(
-        CHAT_ID,
-        `Превышена дельта ${THRESHOLD} руб.: 
+    if (isDeltaExceed) {
+      try {
+        bot.sendMessage(
+          CHAT_ID,
+          `Превышена дельта ${THRESHOLD} руб.: 
         ${currency}: ${old.toFixed(2)} → ${cur.toFixed(2)} руб.
         Разница: ${(cur - old).toFixed(2)} руб.
         `,
-      );
+        );
+      } catch (e) {
+        console.error("Telegram send error:", e);
+      }
     }
   }
 }
 
-async function updateRates() {
+(async () => {
   try {
     const newRates = await fetchRates();
     checkDelta(newRates);
     lastRates = newRates;
-    fs.writeFileSync("rates.json", JSON.stringify(lastRates, null, 2));
+    fs.writeFileSync(ratesPath, JSON.stringify(lastRates, null, 2));
     console.log("Курсы обновлены", lastRates);
   } catch (err) {
     console.error("Ошибка обновления курса:", err);
   }
-}
-
-app.listen(3001, () => console.log("Backend запущен на http://localhost:3001"));
-setInterval(updateRates, 60 * 60 * 1000);
-updateRates();
+})();
