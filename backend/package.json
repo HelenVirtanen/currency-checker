@@ -5,6 +5,7 @@
     "start": "ts-node bot.ts"
   },
   "dependencies": {
+    "bree": "^9.2.8",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^4.22.1",
