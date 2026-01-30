@@ -1,9 +1,9 @@
 import "dotenv/config";
-import * as express from "express";
+import express from "express";
 import fetch from "node-fetch";
-import * as TelegramBot from "node-telegram-bot-api";
-import * as fs from "fs";
-import * as cors from "cors";
+import TelegramBot from "node-telegram-bot-api";
+import fs from "fs";
+import cors from "cors";
 
 const TELEGRAM_TOKEN = process.env.TG_TOKEN!;
 const CHAT_ID = process.env.CHAT_ID!;
@@ -74,7 +74,7 @@ function checkDelta(newRates: Record<string, number>) {
         CHAT_ID,
         `Превышена дельта ${THRESHOLD} руб.: 
         ${currency}: ${old.toFixed(2)} → ${cur.toFixed(2)} руб.
-        Разница: ${cur - old} руб.
+        Разница: ${(cur - old).toFixed(2)} руб.
         `,
       );
     }
