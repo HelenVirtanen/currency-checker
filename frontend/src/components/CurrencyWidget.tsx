@@ -1,29 +1,34 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import "./CurrencyWidget.css";
 
 export function CurrencyWidget() {
-  const [rates, setRates] = useState<Record<string, number> | null>(null);
-
-  useEffect(() => {
-    const fetchRates = async () => {
+  const fetchRates = async () => {
       try {
         const res = await fetch("http://localhost:3001/rates");
         if (!res.ok) {
           throw new Error(`Ошибка сервера: ${res.status}`);
         }
-        const data = await res.json();
-        setRates(data);
+        return res.json();
       } catch (error) {
         console.error("Ошибка загрузки курсов:", error);
       }
     };
 
-    fetchRates();
-    const interval = setInterval(fetchRates, 60_000);
-    return () => clearInterval(interval);
-  }, []);
+  const {
+    data: rates,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["rates"],
+    queryFn: fetchRates,
+    staleTime: 60 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchInterval: false,
+  });
 
-  if (!rates) return <div>Загрузка...</div>;
+  if (isLoading) return <div>Загрузка...</div>;
+  if (isError) return <div>Ошибка: {(error as Error).message}</div>;
 
   return (
     <div className="currency-widget">
